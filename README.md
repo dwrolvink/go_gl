@@ -7,7 +7,7 @@ go env -w GO111MODULE=auto
 ```
 This will not apply module mode when the code is located in $GOPATH/src, and no go.mod file is present.
 
-> On Linux, if $GOPATH is empty. Packages are stored in /home/<user>/go/src/. Modules are stored under /home/<user>/go/pkg/mod
+> On Linux, if $GOPATH is empty. Packages are stored in /home/{user}/go/src/. Modules are stored under /home/{user}/go/pkg/mod
 
 If you are working outside of the package folder, you can set GO111MODULE=off:
 ``` bash 
