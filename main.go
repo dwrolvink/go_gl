@@ -16,29 +16,9 @@ const (
 	Width  = 500
 	Height = 500
 
-	VertexShaderSource = `
-		#version 450
-		in vec3 vp;
-		void main() {
-			gl_Position = vec4(vp, 1.0);
-		}
-	`
-
-	FragmentShaderSource = `
-		#version 450
-		out vec4 frag_colour;
-		void main() {
-			frag_colour = vec4(0.5, 1, 1, 1.0);
-		}
-	`
-
-	FragmentShaderSource2 = `
-	#version 450
-	out vec4 frag_colour;
-	void main() {
-		frag_colour = vec4(0.5, 0.5, 1, 1.0);
-	}
-`
+	VertexShaderSource = "shaders/triangle.vert"
+	FragmentShaderSource = "shaders/triangle.frag"
+	FragmentShaderSource2 = "shaders/triangle2.frag"
 )
 
 var (
@@ -54,10 +34,10 @@ func main() {
 	window := gogl.Init(WindowTitle, Width, Height)
 	
 	// Load shaders
-	vertexShaderID := gogl.MakeShader(VertexShaderSource, gl.VERTEX_SHADER)
-	fragmentShaderID := gogl.MakeShader(FragmentShaderSource, gl.FRAGMENT_SHADER)
+	vertexShaderID := gogl.LoadShader(VertexShaderSource, gl.VERTEX_SHADER)
+	fragmentShaderID := gogl.LoadShader(FragmentShaderSource, gl.FRAGMENT_SHADER)
 
-	fragmentShader2ID := gogl.MakeShader(FragmentShaderSource2, gl.FRAGMENT_SHADER)
+	fragmentShader2ID := gogl.LoadShader(FragmentShaderSource2, gl.FRAGMENT_SHADER)
 
 	// Link everything together in a program
 	programID := gogl.MakeProgram(vertexShaderID, fragmentShaderID)
