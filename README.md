@@ -16,7 +16,7 @@ go env -w GO111MODULE=off
 
 Alternatively, you can pass the setting as a first argument:
 ```bash
-GO111MODULE=off go get github.com/go-gl/gl/v4.1-core/gl
+GO111MODULE=off go get github.com/go-gl/gl/v4.5-core/gl
 GO111MODULE=off go get github.com/go-gl/glfw/v3.2/glfw
 ```
 
