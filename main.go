@@ -33,28 +33,53 @@ var (
 func main() {
 	window := gogl.Init(WindowTitle, Width, Height)
 	
-	// Load shaders
-	vertexShaderID := gogl.LoadShader(VertexShaderSource, gl.VERTEX_SHADER)
-	fragmentShaderID := gogl.LoadShader(FragmentShaderSource, gl.FRAGMENT_SHADER)
-
-	fragmentShader2ID := gogl.LoadShader(FragmentShaderSource2, gl.FRAGMENT_SHADER)
-
-	// Link everything together in a program
-	programID := gogl.MakeProgram(vertexShaderID, fragmentShaderID)
-	program2ID := gogl.MakeProgram(vertexShaderID, fragmentShader2ID)
+	// Create shaders, and link them together in a program
+	program1ID, err := gogl.MakeProgram("program1", VertexShaderSource, FragmentShaderSource)
+	if err != nil {
+		panic(err)
+	}
+	
+	program2ID, err2 := gogl.MakeProgram("program2", VertexShaderSource, FragmentShaderSource2)
+	if err2 != nil {
+		panic(err2)
+	}	
+	
 
 	// Main loop
 	triangleVelocity := float32(0.01)
+	changedShaderFiles := []string{}
+
+
 	for !window.ShouldClose() {
 		// Update game data (move the triangle)
 		UpdateState(&Triangle, &triangleVelocity) 
 
 		// Draw and sleep
+		
 		if triangleVelocity > 0 {
-			gogl.Draw(window, programID, Triangle, gl.TRIANGLES)
+			gogl.Draw(window, program1ID, Triangle, gl.TRIANGLES)
 		} else {
 			gogl.Draw(window, program2ID, Triangle, gl.TRIANGLES)
 		}
+		
+		//gogl.Draw(window, program1ID, Triangle, gl.TRIANGLES)
+
+		// Check if shaders need to be recompiled
+		changedShaderFiles = gogl.GetChangedShaderFiles()
+		if len(changedShaderFiles) > 0 {
+
+			// reload prog1 if necessary
+			_progID, err := gogl.ReloadProgram("program1", changedShaderFiles)
+			if err == nil {
+				program1ID = _progID
+			}
+			// reload prog2 if necessary
+			_progID, err = gogl.ReloadProgram("program2", changedShaderFiles)
+			if err == nil {
+				program2ID = _progID
+			}	
+		}
+		
 		
 		time.Sleep(0 * time.Millisecond)
 	}
