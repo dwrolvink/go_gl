@@ -2,7 +2,7 @@ package main
 
 import (
 	//"fmt"
-	//"log"
+	"log"
 	
 	//"strings"
 	"time"
@@ -34,12 +34,12 @@ func main() {
 	window := gogl.Init(WindowTitle, Width, Height)
 	
 	// Create shaders, and link them together in a program
-	program1ID, err := gogl.MakeProgram("program1", VertexShaderSource, FragmentShaderSource)
+	program1, err := gogl.MakeProgram("program1", VertexShaderSource, FragmentShaderSource)
 	if err != nil {
 		panic(err)
 	}
 	
-	program2ID, err2 := gogl.MakeProgram("program2", VertexShaderSource, FragmentShaderSource2)
+	program2, err2 := gogl.MakeProgram("program2", VertexShaderSource, FragmentShaderSource2)
 	if err2 != nil {
 		panic(err2)
 	}	
@@ -57,9 +57,9 @@ func main() {
 		// Draw and sleep
 		
 		if triangleVelocity > 0 {
-			gogl.Draw(window, program1ID, Triangle, gl.TRIANGLES)
+			gogl.Draw(window, program1, Triangle, gl.TRIANGLES)
 		} else {
-			gogl.Draw(window, program2ID, Triangle, gl.TRIANGLES)
+			gogl.Draw(window, program2, Triangle, gl.TRIANGLES)
 		}
 		
 		//gogl.Draw(window, program1ID, Triangle, gl.TRIANGLES)
@@ -67,17 +67,12 @@ func main() {
 		// Check if shaders need to be recompiled
 		changedShaderFiles = gogl.GetChangedShaderFiles()
 		if len(changedShaderFiles) > 0 {
-
-			// reload prog1 if necessary
-			_progID, err := gogl.ReloadProgram("program1", changedShaderFiles)
-			if err == nil {
-				program1ID = _progID
+			for programName, program := range gogl.LoadedPrograms {
+				err := gogl.ReloadProgram(programName, program, changedShaderFiles)
+				if err != nil {
+					log.Println(err)
+				}
 			}
-			// reload prog2 if necessary
-			_progID, err = gogl.ReloadProgram("program2", changedShaderFiles)
-			if err == nil {
-				program2ID = _progID
-			}	
 		}
 		
 		
