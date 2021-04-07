@@ -2,7 +2,6 @@ package main
 
 import (
 	//"fmt"
-	"log"
 	
 	//"strings"
 	"time"
@@ -28,6 +27,7 @@ var (
 		-0.5, -0.5, 0,
 		0.5, -0.5, 0,
 	}
+	triangleVelocity = float32(0.01)
 )
 
 func main() {
@@ -46,36 +46,21 @@ func main() {
 	
 
 	// Main loop
-	triangleVelocity := float32(0.01)
-	changedShaderFiles := []string{}
-
-
 	for !window.ShouldClose() {
 		// Update game data (move the triangle)
 		UpdateState(&Triangle, &triangleVelocity) 
 
-		// Draw and sleep
-		
+		// Use different programs for when the triangle is moving in different directions
 		if triangleVelocity > 0 {
 			gogl.Draw(window, program1, Triangle, gl.TRIANGLES)
 		} else {
 			gogl.Draw(window, program2, Triangle, gl.TRIANGLES)
 		}
 		
-		//gogl.Draw(window, program1ID, Triangle, gl.TRIANGLES)
-
 		// Check if shaders need to be recompiled
-		changedShaderFiles = gogl.GetChangedShaderFiles()
-		if len(changedShaderFiles) > 0 {
-			for programName, program := range gogl.LoadedPrograms {
-				err := gogl.ReloadProgram(programName, program, changedShaderFiles)
-				if err != nil {
-					log.Println(err)
-				}
-			}
-		}
+		gogl.HotloadShaders()
 		
-		
+		// Sleep to control the speed
 		time.Sleep(0 * time.Millisecond)
 	}
 
