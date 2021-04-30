@@ -28,6 +28,7 @@ go env -w GO111MODULE=off
 # Download packages
 go get github.com/go-gl/gl/v4.1-core/gl
 go get github.com/go-gl/glfw/v3.2/glfw
+go get github.com/dwrolvink/gogl
 ```
 
 # Run
