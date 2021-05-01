@@ -1,8 +1,12 @@
 # go_gl
 This is an example app for the [go-gl wrapper package](https://github.com/dwrolvink/gogl/tree/main) that I'm writing as an exercise.
-It draws a triangle on a screen, which moves around and changes color.
+
+- It draws a multiple triangles on a screen, which moves around and changes color. (Dataset 1)
+- It draws a picture to the screen (Dataset 0; default). Example of using quads instead of triangle vertices.
+- It can record gifs of what happens on the screen (not very performant).
 
 I have built this package on linux with go 1.16, it's not guaranteed to work on any other system, but it probably will. Let me know if you have troubles.
+- Recording will not work on non linux systems as of yet!
 
 See https://www.youtube.com/watch?v=EJz71vpNhSU&list=PLDZujg-VgQlZUy1iCqBbe5faZLMkA3g2x&index=42 for the lecture this package is based on.
 
@@ -51,5 +55,26 @@ go run ./main.go
 go build -v
 
 # Run
-./gl
+./go_gl
+```
+
+## Args
+Choose different dataset (e.g. triangles instead of pepe):
+```bash
+go run ./main.go -s 1
+```
+
+Record gif to `record/output/`. Default length is 1 second (50 ticks @ 20ms per tick).
+```bash
+go run ./main.go -r
+```
+
+Record gif to `record/output/`. Change length to 2 seconds.
+```bash
+go run ./main.go -r 100
+```
+
+Combinations allowed:
+```bash
+go run ./main.go -r 100 -s 1
 ```
