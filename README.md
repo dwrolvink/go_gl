@@ -7,6 +7,7 @@ This is an example app for the [go-gl wrapper package](https://github.com/dwrolv
 
 I have built this package on linux with go 1.16, it's not guaranteed to work on any other system, but it probably will. Let me know if you have troubles.
 - Recording will not work on non linux systems as of yet!
+- Recording requires ffmpeg to be installed.
 
 See https://www.youtube.com/watch?v=EJz71vpNhSU&list=PLDZujg-VgQlZUy1iCqBbe5faZLMkA3g2x&index=42 for the lecture this package is based on.
 
@@ -64,7 +65,11 @@ Choose different dataset (e.g. triangles instead of pepe):
 go run ./main.go -s 1
 ```
 
+
 Record gif to `record/output/`. Default length is 1 second (50 ticks @ 20ms per tick).
+
+> Recording requires ffmpeg to be installed.
+
 ```bash
 go run ./main.go -r
 ```
