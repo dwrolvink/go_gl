@@ -71,12 +71,17 @@ Record gif to `record/output/`. Default length is 1 second (50 ticks @ 20ms per 
 > Recording requires ffmpeg to be installed.
 
 ```bash
-go run ./main.go -r
+go run ./main.go --record
 ```
 
 Record gif to `record/output/`. Change length to 2 seconds.
 ```bash
-go run ./main.go -r 100
+go run ./main.go --record 2
+```
+
+Change the speed. Note that fps of 50 is the max that will work with gifs.
+```bash
+go run ./main.go --fps 20
 ```
 
 Combinations allowed:

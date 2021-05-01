@@ -26,12 +26,14 @@ const (
 var (
 	WindowTitle = "Test GL Application"
 
-	x         float32 = 0.0  // used to move the sprites around
-	dir_x     float32 = 1    // used to change x
-	tick      float32 = -1.0 // ticks up every game loop cycle
-	frameTick int     = 0    // downgrade of ticks, to animate sprites
+	x        float32 = 0.0  // used to move the sprites around
+	dir_x    float32 = 1    // used to change x
+	tick     float32 = -1.0 // ticks up every game loop cycle
+	delay_ms int64   = 20   // handles frame rate
 
-	DrawMode string = "composite"
+	DrawMode      string  = "composite"                        // chooses whether to draw one dataset, or all of them
+	record        bool    = false                              // whether to record the screen.
+	record_length float32 = float32(1.0 * (1000.0 / delay_ms)) // After how many ticks to stop recording
 )
 
 func main() {
@@ -41,11 +43,13 @@ func main() {
 	data, datalist := SetData()
 	_ = datalist
 
+	// COMMANDLINE ARGS
+	// ===========================================================
+
 	// FPS
 	// -----------------------------------------------------------
-	delay_ms := int64(20)
-
-	// Apply commandline choice for fps, if present
+	// Apply commandline choice for fps, if present.
+	// Note that for recording, 50 fps is the max.
 	for i := range os.Args {
 		if os.Args[i] == "--fps" {
 
@@ -62,21 +66,18 @@ func main() {
 
 	// Record
 	// -----------------------------------------------------------
-	record := false
-	var record_length float32 = 50.0
-
+	// Apply commandline choice for recording settings, if present
 	for i := range os.Args {
 		if os.Args[i] == "--record" {
+			// Enable recording
 			record = true
 			InitRecording()
 
-			// check if record_length has been passed
+			// Check if record_length has been passed
 			if i+1 < len(os.Args) {
-				choice, err := strconv.Atoi(os.Args[i+1])
-				// arg can be converted to int
+				choice, err := strconv.Atoi(os.Args[i+1]) // convert string input to int
 				if err == nil {
-					record_length = float32(int64(choice) * (1000.0 / delay_ms))
-					fmt.Println(choice, delay_ms, record_length)
+					record_length = float32(int64(choice) * (1000.0 / delay_ms)) // input is in seconds, convert to ticks
 				}
 			}
 		}
@@ -86,14 +87,11 @@ func main() {
 	// ===========================================================
 	for !window.ShouldClose() && (!record || tick < record_length) {
 
+		// Framerate management
 		start := time.Now()
 
 		// Update global game vars
 		tick += 1.0
-
-		if int(tick)%5 == 0 {
-			frameTick++
-		}
 
 		x += 0.01 * dir_x
 		if x > 1.0 || x < -1.0 {
@@ -209,6 +207,7 @@ func SetData() (gogl.DataObject, []gogl.DataObject) {
 		},
 		FlipH: 1.0,
 		Yn:    1.0,
+		Scale: 0.16,
 	})
 
 	// Second dataset: Vertex type: Simple triangles
@@ -235,7 +234,6 @@ func SetData() (gogl.DataObject, []gogl.DataObject) {
 	data := datalist[0]
 
 	// Apply commandline choice for dataset, if present
-	DrawMode = "single_set"
 
 	for i := range os.Args {
 		if os.Args[i] == "-s" {
@@ -245,11 +243,13 @@ func SetData() (gogl.DataObject, []gogl.DataObject) {
 					DrawMode = "composite"
 					break
 				}
+				DrawMode = "single_set"
 
 				// Print one of the datasets
 				choice, err := strconv.Atoi(os.Args[i+1])
 				if err != nil {
 					fmt.Println("ERROR: Dataset index not passed in. E.g. '-s 1'. Ignoring.")
+					break
 				}
 				data = datalist[choice]
 
@@ -321,18 +321,17 @@ func DrawComposite(datalist []gogl.DataObject) {
 	data := datalist[1]
 	data.Enable()
 	data.Update()
-	data.Program.SetFloat("x", x)
-	data.Program.SetFloat("y", x)
-	data.Program.SetFloat("scale", 2.0)
+	data.Program.SetFloat("x", x*0.5)
+	data.Program.SetFloat("y", x*0.5)
+	data.Program.SetFloat("scale", 1.5)
 	data.Program.SetFloat("t", tick)
 
 	gl.DrawArrays(gl.TRIANGLES, 0, int32(len(data.Vertices)/3))
-	data.Program.SetFloat("x", -x)
+	data.Program.SetFloat("x", -x*0.5)
 	gl.DrawArrays(gl.TRIANGLES, 0, int32(len(data.Vertices)/3))
-	data.Program.SetFloat("y", -x)
+	data.Program.SetFloat("y", -x*0.5)
 	gl.DrawArrays(gl.TRIANGLES, 0, int32(len(data.Vertices)/3))
-	data.Program.SetFloat("x", x)
-	data.Program.SetFloat("z", 2.0)
+	data.Program.SetFloat("x", x*0.5)
 	gl.DrawArrays(gl.TRIANGLES, 0, int32(len(data.Vertices)/3))
 
 	// Composite - pepe
@@ -369,7 +368,6 @@ func DrawComposite(datalist []gogl.DataObject) {
 	}
 	sprite.SetFrame(&data)
 
-	data.Program.SetFloat("scale", 0.16)
 	gl.DrawElements(gl.TRIANGLES, 6, gl.UNSIGNED_INT, gl.PtrOffset(0))
 }
 
