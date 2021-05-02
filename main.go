@@ -158,6 +158,7 @@ func SetData() (gogl.DataObject, []gogl.DataObject) {
 
 	// load sprites and add to sprite list
 	datalist[0].AddSprite(gogl.Sprite{
+		Name:           "DancingPepe",
 		TextureSource:  "assets/img/texture.png",
 		Divisions:      4,
 		AnimationSpeed: 5,
@@ -173,6 +174,7 @@ func SetData() (gogl.DataObject, []gogl.DataObject) {
 	})
 
 	datalist[0].AddSprite(gogl.Sprite{
+		Name:           "Walking Blob",
 		TextureSource:  "assets/img/texture.png",
 		Divisions:      8,
 		AnimationSpeed: 10,
