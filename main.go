@@ -98,6 +98,13 @@ func main() {
 			dir_x *= -1.0
 		}
 
+		// Update DataObjects
+		for i := range datalist {
+			// This primarily is used for advancing the Sprite clock
+			// (for Sprite animation) at the moment
+			datalist[i].Update()
+		}
+
 		// Clear screen
 		gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 
@@ -264,7 +271,6 @@ func SetData() (gogl.DataObject, []gogl.DataObject) {
 
 func DrawDataset(data gogl.DataObject) {
 	data.Enable()
-	data.Update()
 
 	// load uniforms
 	data.Program.SetFloat("x", x)
@@ -320,7 +326,6 @@ func DrawComposite(datalist []gogl.DataObject) {
 	// --------------------------------------------
 	data := datalist[1]
 	data.Enable()
-	data.Update()
 	data.Program.SetFloat("x", x*0.5)
 	data.Program.SetFloat("y", x*0.5)
 	data.Program.SetFloat("scale", 1.5)
@@ -338,7 +343,6 @@ func DrawComposite(datalist []gogl.DataObject) {
 	// --------------------------------------------
 	data = datalist[0]
 	data.Enable()
-	data.Update()
 	data.Program.SetFloat("t", tick)
 	data.Program.SetFloat("x", x)
 	data.Program.SetFloat("y", x)
@@ -348,7 +352,7 @@ func DrawComposite(datalist []gogl.DataObject) {
 	sprite := data.SelectSprite(0)
 	sprite.Xn = x
 	sprite.Yn = x
-	sprite.SetFrame(&data)
+	sprite.SetUniforms(&data)
 
 	data.Program.SetFloat("scale", 0.5)
 	gl.DrawElements(gl.TRIANGLES, 6, gl.UNSIGNED_INT, gl.PtrOffset(0))
@@ -366,7 +370,7 @@ func DrawComposite(datalist []gogl.DataObject) {
 	} else {
 		sprite.FlipH = 1.0
 	}
-	sprite.SetFrame(&data)
+	sprite.SetUniforms(&data)
 
 	gl.DrawElements(gl.TRIANGLES, 6, gl.UNSIGNED_INT, gl.PtrOffset(0))
 }
